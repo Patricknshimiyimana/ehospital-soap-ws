@@ -12,6 +12,7 @@ import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlSchemaType;
 import jakarta.xml.bind.annotation.XmlType;
 
 
@@ -25,11 +26,10 @@ import jakarta.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;choice&gt;
- *           &lt;element name="username" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
- *           &lt;element name="email" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
- *           &lt;element name="phone" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
- *         &lt;/choice&gt;
+ *         &lt;element name="fullNames" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="phone" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="gender" type="{http://example.com/auth}UserGenderType"/&gt;
+ *         &lt;element name="age" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
  *         &lt;element name="password" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
@@ -41,66 +41,48 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "username",
-    "email",
+    "fullNames",
     "phone",
+    "gender",
+    "age",
     "password"
 })
-@XmlRootElement(name = "AuthRequest")
-public class AuthRequest {
+@XmlRootElement(name = "PharmacistRegisterRequest")
+public class PharmacistRegisterRequest {
 
-    protected String username;
-    protected String email;
+    @XmlElement(required = true)
+    protected String fullNames;
+    @XmlElement(required = true)
     protected String phone;
+    @XmlElement(required = true)
+    @XmlSchemaType(name = "string")
+    protected UserGenderType gender;
+    protected int age;
     @XmlElement(required = true)
     protected String password;
 
     /**
-     * Gets the value of the username property.
+     * Gets the value of the fullNames property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getUsername() {
-        return username;
+    public String getFullNames() {
+        return fullNames;
     }
 
     /**
-     * Sets the value of the username property.
+     * Sets the value of the fullNames property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setUsername(String value) {
-        this.username = value;
-    }
-
-    /**
-     * Gets the value of the email property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getEmail() {
-        return email;
-    }
-
-    /**
-     * Sets the value of the email property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setEmail(String value) {
-        this.email = value;
+    public void setFullNames(String value) {
+        this.fullNames = value;
     }
 
     /**
@@ -125,6 +107,46 @@ public class AuthRequest {
      */
     public void setPhone(String value) {
         this.phone = value;
+    }
+
+    /**
+     * Gets the value of the gender property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link UserGenderType }
+     *     
+     */
+    public UserGenderType getGender() {
+        return gender;
+    }
+
+    /**
+     * Sets the value of the gender property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link UserGenderType }
+     *     
+     */
+    public void setGender(UserGenderType value) {
+        this.gender = value;
+    }
+
+    /**
+     * Gets the value of the age property.
+     * 
+     */
+    public int getAge() {
+        return age;
+    }
+
+    /**
+     * Sets the value of the age property.
+     * 
+     */
+    public void setAge(int value) {
+        this.age = value;
     }
 
     /**

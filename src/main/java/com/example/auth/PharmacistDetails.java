@@ -11,25 +11,26 @@ package com.example.auth;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlSchemaType;
 import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for anonymous complex type.
+ * <p>Java class for PharmacistDetails complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType&gt;
+ * &lt;complexType name="PharmacistDetails"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
+ *         &lt;element name="id" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
  *         &lt;element name="fullNames" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
- *         &lt;element name="username" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="phone" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
  *         &lt;element name="gender" type="{http://example.com/auth}UserGenderType"/&gt;
  *         &lt;element name="age" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
+ *         &lt;element name="role" type="{http://example.com/auth}UserRoleTypes"/&gt;
  *         &lt;element name="password" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
@@ -40,26 +41,56 @@ import jakarta.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
+@XmlType(name = "PharmacistDetails", propOrder = {
+    "id",
     "fullNames",
-    "username",
+    "phone",
     "gender",
     "age",
+    "role",
     "password"
 })
-@XmlRootElement(name = "PatientRegisterRequest")
-public class PatientRegisterRequest {
+public class PharmacistDetails {
 
+    @XmlElement(required = true)
+    protected String id;
     @XmlElement(required = true)
     protected String fullNames;
     @XmlElement(required = true)
-    protected String username;
+    protected String phone;
     @XmlElement(required = true)
     @XmlSchemaType(name = "string")
     protected UserGenderType gender;
     protected int age;
     @XmlElement(required = true)
+    @XmlSchemaType(name = "string")
+    protected UserRoleTypes role;
+    @XmlElement(required = true)
     protected String password;
+
+    /**
+     * Gets the value of the id property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * Sets the value of the id property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setId(String value) {
+        this.id = value;
+    }
 
     /**
      * Gets the value of the fullNames property.
@@ -86,27 +117,27 @@ public class PatientRegisterRequest {
     }
 
     /**
-     * Gets the value of the username property.
+     * Gets the value of the phone property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getUsername() {
-        return username;
+    public String getPhone() {
+        return phone;
     }
 
     /**
-     * Sets the value of the username property.
+     * Sets the value of the phone property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setUsername(String value) {
-        this.username = value;
+    public void setPhone(String value) {
+        this.phone = value;
     }
 
     /**
@@ -147,6 +178,30 @@ public class PatientRegisterRequest {
      */
     public void setAge(int value) {
         this.age = value;
+    }
+
+    /**
+     * Gets the value of the role property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link UserRoleTypes }
+     *     
+     */
+    public UserRoleTypes getRole() {
+        return role;
+    }
+
+    /**
+     * Sets the value of the role property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link UserRoleTypes }
+     *     
+     */
+    public void setRole(UserRoleTypes value) {
+        this.role = value;
     }
 
     /**

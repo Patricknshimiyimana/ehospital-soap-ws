@@ -18,6 +18,8 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 import com.example.auth.AuthRequest;
 import com.example.auth.AuthResponse;
 import com.example.auth.AuthorizationHeader;
+import com.example.auth.GetAllPharmacistsRequest;
+import com.example.auth.GetAllPharmacistsResponse;
 import com.example.auth.GetAllPhysiciansRequest;
 import com.example.auth.GetAllPhysiciansResponse;
 import com.example.auth.PhysicianRegisterRequest;
@@ -27,15 +29,18 @@ import com.example.auth.SelectPhysicianResponse;
 import com.example.auth.UserGenderType;
 import com.example.auth.PatientRegisterRequest;
 import com.example.auth.PatientRegisterResponse;
+import com.example.auth.PharmacistRegisterRequest;
+import com.example.auth.PharmacistRegisterResponse;
 import com.example.auth.UserRoleTypes;
 import com.example.soap.webservices.ehospitalsoap.soap.bean.User;
 import com.example.soap.webservices.ehospitalsoap.soap.bean.enums.Gender;
 import com.example.soap.webservices.ehospitalsoap.soap.bean.enums.Status;
 import com.example.soap.webservices.ehospitalsoap.soap.bean.enums.UserRoles;
+import com.example.soap.webservices.ehospitalsoap.soap.bean.Pharmacist;
 import com.example.soap.webservices.ehospitalsoap.soap.bean.Physician;
+import com.example.soap.webservices.ehospitalsoap.soap.service.PharmacistService;
 import com.example.soap.webservices.ehospitalsoap.soap.service.PhysicianService;
-import com.example.soap.webservices.ehospitalsoap.soap.service.UserService;
-// import com.example.soap.webservices.ehospitalsoap.soap.service.UserService.Status;
+import com.example.soap.webservices.ehospitalsoap.soap.service.PatientService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
@@ -46,21 +51,29 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class EHospitalEndpoint {
 
     @Autowired
-    private UserService userService;
+    private PatientService patientService;
 
     @Autowired
     private PhysicianService physicianService;
 
+    @Autowired
+    private PharmacistService pharmacistService;
+
     @PayloadRoot(namespace = "http://example.com/auth", localPart = "AuthRequest")
     @ResponsePayload
     public AuthResponse authenticate(@RequestPayload AuthRequest request) {
+
         AuthResponse response = new AuthResponse();
-        boolean authenticated = userService.authenticateUser(request.getUsername(), request.getPassword());
+
+        boolean authenticated = patientService.authenticatePatient(request.getUsername(), request.getPassword());
         response.setAuthenticated(authenticated);
+
         if (!authenticated) {
             response.setMessage("Incorrect credentials");
             return response;
         }
+
+        User existingUser = patientService.findByUsername(request.getUsername());
 
         Instant now = Instant.now();
         Instant expirationTime = now.plus(10, ChronoUnit.HOURS);
@@ -70,7 +83,7 @@ public class EHospitalEndpoint {
         String jwtToken = Jwts.builder()
                 .setSubject(request.getUsername())
                 .claim("username", request.getUsername())
-                // .claim("role", existingUser.role.name())
+                .claim("role", existingUser.getRole().name())
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(expirationTime))
                 .signWith(signingKey)
@@ -102,6 +115,26 @@ public class EHospitalEndpoint {
         return response;
     }
 
+    @PayloadRoot(namespace = "http://example.com/auth", localPart = "GetAllPharmacistsRequest")
+    @ResponsePayload
+    public GetAllPharmacistsResponse getAllPhysicians(@RequestPayload GetAllPharmacistsRequest request) {
+
+        AuthorizationHeader authHeader = request.getAuthorizationHeader();
+        String token = authHeader.getToken();
+        System.out.println("ahhahahahah" + token);
+
+        Claims claims = parseJwtToken(token);
+        System.out.println("claimsssss" + claims);
+
+        GetAllPharmacistsResponse response = new GetAllPharmacistsResponse();
+        List<Pharmacist> users = Arrays.asList(pharmacistService.getAllPharmacists());
+
+        for (Pharmacist user : users) {
+            response.getPharmacists().add(mapPharmacistDetails(user));
+        }
+        return response;
+    }
+
     @PayloadRoot(namespace = "http://example.com/auth", localPart = "PatientRegisterRequest")
     @ResponsePayload
     public PatientRegisterResponse registerUser(@RequestPayload PatientRegisterRequest request) {
@@ -119,7 +152,7 @@ public class EHospitalEndpoint {
                 request.getAge(),
                 mapUserRoles(UserRoleTypes.PATIENT), request.getPassword());
 
-        Status status = userService.addUser(user);
+        Status status = patientService.addUser(user);
 
         PatientRegisterResponse response = new PatientRegisterResponse();
         response.setRegistered(status == Status.SUCCESS ? true : false);
@@ -157,6 +190,34 @@ public class EHospitalEndpoint {
         return response;
     }
 
+    @PayloadRoot(namespace = "http://example.com/auth", localPart = "PharmacistRegisterRequest")
+    @ResponsePayload
+    public PharmacistRegisterResponse registerPharmacist(@RequestPayload PharmacistRegisterRequest request) {
+
+        // validate request data
+        if (request.getFullNames() == "[string]" || request.getFullNames().isEmpty()
+                || request.getPhone() == "[string]" || request.getPhone().isEmpty()
+                || request.getPassword() == "[string]" || request.getPassword().isEmpty()
+                || request.getGender() == null || request.getGender().toString().isEmpty()
+                || request.getAge() == 0) {
+            throw new RuntimeException("Please fill in all fields correctly");
+        }
+
+        Pharmacist pharmacist = new Pharmacist(request.getFullNames(), request.getPhone(),
+                mapGender(request.getGender()),
+                request.getAge(),
+                mapUserRoles(UserRoleTypes.PHARMACIST), request.getPassword());
+
+        Status status = pharmacistService.addPharmacist(pharmacist);
+
+        PharmacistRegisterResponse response = new PharmacistRegisterResponse();
+        response.setRegistered(status == Status.SUCCESS ? true : false);
+        response.setMessage("registered successfully");
+        response.setPharmacist(mapPharmacistDetails(pharmacist));
+
+        return response;
+    }
+
     @PayloadRoot(namespace = "http://example.com/auth", localPart = "SelectPhysicianRequest")
     @ResponsePayload
     public SelectPhysicianResponse selectPhysician(@RequestPayload SelectPhysicianRequest request) throws Exception {
@@ -172,7 +233,7 @@ public class EHospitalEndpoint {
 
         String username = claims.get("username", String.class);
 
-        User user = userService.findByUsername(username);
+        User user = patientService.findByUsername(username);
 
         Physician physicianExists = physicianService.findByEmail(request.getPhysicianEmail());
 
@@ -180,7 +241,7 @@ public class EHospitalEndpoint {
             throw new RuntimeException("Physician not found");
         }
 
-        User updatedUser = UserService.selectPhysician(user.getUsername(), physicianExists);
+        User updatedUser = PatientService.selectPhysician(user.getUsername(), physicianExists);
 
         response.setMessage("selected physician successfully!");
         response.setUser(mapUser(updatedUser));
@@ -225,16 +286,29 @@ public class EHospitalEndpoint {
     }
 
     private com.example.auth.PhysicianDetails mapPhysicianDetails(Physician user) {
-        com.example.auth.PhysicianDetails PatientDetails = new com.example.auth.PhysicianDetails();
+        com.example.auth.PhysicianDetails physicianDetails = new com.example.auth.PhysicianDetails();
 
-        PatientDetails.setId(user.getId());
-        PatientDetails.setEmail(user.getEmail());
-        PatientDetails.setAge(user.getAge());
-        PatientDetails.setFullNames(user.getFullNames());
-        PatientDetails.setGender(user.getGender() == Gender.Female ? UserGenderType.FEMALE : UserGenderType.MALE);
-        PatientDetails.setRole(mapUserRoleTypes(user.getRole()));
+        physicianDetails.setId(user.getId());
+        physicianDetails.setEmail(user.getEmail());
+        physicianDetails.setAge(user.getAge());
+        physicianDetails.setFullNames(user.getFullNames());
+        physicianDetails.setGender(user.getGender() == Gender.Female ? UserGenderType.FEMALE : UserGenderType.MALE);
+        physicianDetails.setRole(mapUserRoleTypes(user.getRole()));
 
-        return PatientDetails;
+        return physicianDetails;
+    }
+
+    private com.example.auth.PharmacistDetails mapPharmacistDetails(Pharmacist user) {
+        com.example.auth.PharmacistDetails pharmacistDetails = new com.example.auth.PharmacistDetails();
+
+        pharmacistDetails.setId(user.getId());
+        pharmacistDetails.setPhone(user.getPhone());
+        pharmacistDetails.setAge(user.getAge());
+        pharmacistDetails.setFullNames(user.getFullNames());
+        pharmacistDetails.setGender(user.getGender() == Gender.Female ? UserGenderType.FEMALE : UserGenderType.MALE);
+        pharmacistDetails.setRole(mapUserRoleTypes(user.getRole()));
+
+        return pharmacistDetails;
     }
 
     private UserRoleTypes mapUserRoleTypes(UserRoles role) {

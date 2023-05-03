@@ -14,7 +14,7 @@ import com.example.soap.webservices.ehospitalsoap.soap.bean.enums.Status;
 import com.example.soap.webservices.ehospitalsoap.soap.bean.enums.UserRoles;
 
 @Component
-public class UserService {
+public class PatientService {
 
 	private static Map<String, User> users = new LinkedHashMap<>();
 
@@ -39,7 +39,7 @@ public class UserService {
 		return Status.SUCCESS;
 	}
 
-	public boolean authenticateUser(String username, String password) {
+	public boolean authenticatePatient(String username, String password) {
 		User user = findByUsername(username);
 		if (user != null && user.getPassword().equals(password)) {
 			return true;

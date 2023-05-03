@@ -48,6 +48,28 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="PharmacistRegisterRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="fullNames" type="xs:string"></xs:element>
+                <xs:element name="phone" type="xs:string"></xs:element>
+                <xs:element name="gender" type="tns:UserGenderType"></xs:element>
+                <xs:element name="age" type="xs:int"></xs:element>
+                <xs:element name="password" type="xs:string"></xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="PharmacistRegisterResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="registered" type="xs:boolean" />
+                <xs:element name="message" type="xs:string" />
+                <xs:element name="Pharmacist" type="tns:PharmacistDetails" minOccurs="0" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
     <xs:element name="AuthRequest">
         <xs:complexType>
             <xs:sequence>
@@ -83,6 +105,22 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="Physicians" type="tns:PhysicianDetails" maxOccurs="unbounded"></xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetAllPharmacistsRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="AuthorizationHeader" type="tns:AuthorizationHeader" minOccurs="1" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetAllPharmacistsResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Pharmacists" type="tns:PharmacistDetails" maxOccurs="unbounded"></xs:element>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -123,6 +161,18 @@
             <xs:element name="id" type="xs:string"></xs:element>
             <xs:element name="fullNames" type="xs:string"></xs:element>
             <xs:element name="email" type="xs:string"></xs:element>
+            <xs:element name="gender" type="tns:UserGenderType"></xs:element>
+            <xs:element name="age" type="xs:int"></xs:element>
+            <xs:element name="role" type="tns:UserRoleTypes"></xs:element>
+            <xs:element name="password" type="xs:string"></xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="PharmacistDetails">
+        <xs:sequence>
+            <xs:element name="id" type="xs:string"></xs:element>
+            <xs:element name="fullNames" type="xs:string"></xs:element>
+            <xs:element name="phone" type="xs:string"></xs:element>
             <xs:element name="gender" type="tns:UserGenderType"></xs:element>
             <xs:element name="age" type="xs:int"></xs:element>
             <xs:element name="role" type="tns:UserRoleTypes"></xs:element>

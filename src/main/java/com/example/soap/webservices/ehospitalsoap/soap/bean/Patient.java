@@ -11,7 +11,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class User {
+public class Patient {
     public String id;
     @NonNull
     public String fullNames;
@@ -20,11 +20,12 @@ public class User {
     private Integer age;
     protected UserRoles role;
     private Physician selectedPhysician;
+    public Consultation consultation;
     @NonNull
     // @Expose(serialize = false)
     private String password;
 
-    public User(String fullNames, String username, Gender gender, Integer age, UserRoles role, String password) {
+    public Patient(String fullNames, String username, Gender gender, Integer age, UserRoles role, String password) {
         this.id = UUID.randomUUID().toString();
         this.age = age;
         this.fullNames = fullNames;

@@ -93,6 +93,25 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="PhysicianAuthRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="email" type="xs:string" />
+                <xs:element name="password" type="xs:string" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="PhysicianAuthResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="authenticated" type="xs:boolean" />
+                <xs:element name="message" type="xs:string" />
+                <xs:element name="token" type="xs:string" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
     <xs:element name="GetAllPhysiciansRequest">
         <xs:complexType>
             <xs:sequence>
@@ -140,6 +159,26 @@
                 <xs:element name="message" type="xs:string" />
                 <xs:element name="User" type="tns:PatientDetails" minOccurs="1" />
                 <xs:element name="selectedPhysician" type="tns:PhysicianDetails" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GiveConsultationRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="AuthorizationHeader" type="tns:AuthorizationHeader" minOccurs="1" />
+                <xs:element name="patientUsername" type="xs:string" />
+                <xs:element name="diseaseName" type="xs:string" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GiveConsultationResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="message" type="xs:string" />
+                <xs:element name="User" type="tns:PatientDetails" minOccurs="1" />
+                <xs:element name="Consultation" type="tns:PatientConsultation" />
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -200,5 +239,12 @@
             <xs:enumeration value="Pharmacist" />
         </xs:restriction>
     </xs:simpleType>
+
+    <xs:complexType name="PatientConsultation">
+        <xs:sequence>
+            <xs:element name="PatientUsername" type="xs:string" />
+            <xs:element name="diseaseName" type="xs:string" />
+        </xs:sequence>
+    </xs:complexType>
 
 </xs:schema>

@@ -22,6 +22,9 @@ import com.example.auth.GetAllPharmacistsRequest;
 import com.example.auth.GetAllPharmacistsResponse;
 import com.example.auth.GetAllPhysiciansRequest;
 import com.example.auth.GetAllPhysiciansResponse;
+import com.example.auth.GiveConsultationRequest;
+import com.example.auth.GiveConsultationResponse;
+import com.example.auth.PatientConsultation;
 import com.example.auth.PhysicianRegisterRequest;
 import com.example.auth.PhysicianRegisterResponse;
 import com.example.auth.SelectPhysicianRequest;
@@ -31,8 +34,11 @@ import com.example.auth.PatientRegisterRequest;
 import com.example.auth.PatientRegisterResponse;
 import com.example.auth.PharmacistRegisterRequest;
 import com.example.auth.PharmacistRegisterResponse;
+import com.example.auth.PhysicianAuthRequest;
+import com.example.auth.PhysicianAuthResponse;
 import com.example.auth.UserRoleTypes;
-import com.example.soap.webservices.ehospitalsoap.soap.bean.User;
+import com.example.soap.webservices.ehospitalsoap.soap.bean.Consultation;
+import com.example.soap.webservices.ehospitalsoap.soap.bean.Patient;
 import com.example.soap.webservices.ehospitalsoap.soap.bean.enums.Gender;
 import com.example.soap.webservices.ehospitalsoap.soap.bean.enums.Status;
 import com.example.soap.webservices.ehospitalsoap.soap.bean.enums.UserRoles;
@@ -73,7 +79,7 @@ public class EHospitalEndpoint {
             return response;
         }
 
-        User existingUser = patientService.findByUsername(request.getUsername());
+        Patient existingUser = patientService.findByUsername(request.getUsername());
 
         Instant now = Instant.now();
         Instant expirationTime = now.plus(10, ChronoUnit.HOURS);
@@ -84,6 +90,42 @@ public class EHospitalEndpoint {
                 .setSubject(request.getUsername())
                 .claim("username", request.getUsername())
                 .claim("role", existingUser.getRole().name())
+                .setIssuedAt(Date.from(now))
+                .setExpiration(Date.from(expirationTime))
+                .signWith(signingKey)
+                .compact();
+
+        response.setMessage("Logged in successfully");
+        response.setToken(jwtToken);
+
+        return response;
+    }
+
+    @PayloadRoot(namespace = "http://example.com/auth", localPart = "PhysicianAuthRequest")
+    @ResponsePayload
+    public PhysicianAuthResponse authenticatePhysician(@RequestPayload PhysicianAuthRequest request) {
+
+        PhysicianAuthResponse response = new PhysicianAuthResponse();
+
+        boolean authenticated = physicianService.authenticatePhysician(request.getEmail(), request.getPassword());
+        response.setAuthenticated(authenticated);
+
+        if (!authenticated) {
+            response.setMessage("Incorrect credentials");
+            return response;
+        }
+
+        Physician existingPhysician = physicianService.findByEmail(request.getEmail());
+
+        Instant now = Instant.now();
+        Instant expirationTime = now.plus(10, ChronoUnit.HOURS);
+        String secretKey = "mysecretkeywhichmustnotbelessthan256bitslong";
+        Key signingKey = new SecretKeySpec(secretKey.getBytes(), SignatureAlgorithm.HS256.getJcaName());
+
+        String jwtToken = Jwts.builder()
+                .setSubject(request.getEmail())
+                .claim("email", request.getEmail())
+                .claim("role", existingPhysician.getRole().name())
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(expirationTime))
                 .signWith(signingKey)
@@ -148,7 +190,7 @@ public class EHospitalEndpoint {
             throw new RuntimeException("Please fill in all fields correctly");
         }
 
-        User user = new User(request.getFullNames(), request.getUsername(), mapGender(request.getGender()),
+        Patient user = new Patient(request.getFullNames(), request.getUsername(), mapGender(request.getGender()),
                 request.getAge(),
                 mapUserRoles(UserRoleTypes.PATIENT), request.getPassword());
 
@@ -233,7 +275,7 @@ public class EHospitalEndpoint {
 
         String username = claims.get("username", String.class);
 
-        User user = patientService.findByUsername(username);
+        Patient user = patientService.findByUsername(username);
 
         Physician physicianExists = physicianService.findByEmail(request.getPhysicianEmail());
 
@@ -241,13 +283,60 @@ public class EHospitalEndpoint {
             throw new RuntimeException("Physician not found");
         }
 
-        User updatedUser = PatientService.selectPhysician(user.getUsername(), physicianExists);
+        Patient updatedUser = PatientService.selectPhysician(user.getUsername(), physicianExists);
 
         response.setMessage("selected physician successfully!");
         response.setUser(mapUser(updatedUser));
         response.setSelectedPhysician(mapPhysicianDetails(physicianService.findByEmail(request.getPhysicianEmail())));
 
         return response;
+    }
+
+    @PayloadRoot(namespace = "http://example.com/auth", localPart = "GiveConsultationRequest")
+    @ResponsePayload
+    public GiveConsultationResponse giveConsultation(@RequestPayload GiveConsultationRequest request) throws Exception {
+
+        GiveConsultationResponse response = new GiveConsultationResponse();
+
+        AuthorizationHeader authHeader = request.getAuthorizationHeader();
+        String token = authHeader.getToken();
+        System.out.println("ahhahahahah" + token);
+
+        Claims claims = parseJwtToken(token);
+        System.out.println("claimsssss" + claims);
+
+        String PhysicianEmail = claims.get("email", String.class);
+
+        Patient user = patientService.findByUsername(request.getPatientUsername());
+
+        if (user == null) {
+            throw new RuntimeException("Patient not found");
+        }
+
+        if (user.getSelectedPhysician() == null || user.getSelectedPhysician().getEmail() == PhysicianEmail) {
+            System.out.println(user.getSelectedPhysician() != null);
+            System.out.println(user.getSelectedPhysician().getEmail() == PhysicianEmail);
+            throw new RuntimeException("401 - Unauthorized");
+        }
+
+        Physician physician = physicianService.findByEmail(PhysicianEmail);
+
+        Consultation consultation = new Consultation(request.getDiseaseName(), physician);
+
+        Patient updatedUser = PatientService.getConsultation(user.getUsername(), consultation);
+
+        response.setMessage("successfully given consultation to patient");
+        response.setUser(mapUser(updatedUser));
+        response.setConsultation(mapConsultation(consultation));
+
+        return response;
+    }
+
+    private PatientConsultation mapConsultation(Consultation consultation) {
+        PatientConsultation patientConsultation = new PatientConsultation();
+        patientConsultation.setDiseaseName(consultation.getDisease());
+
+        return patientConsultation;
     }
 
     private UserRoles mapUserRoles(UserRoleTypes role) {
@@ -271,7 +360,7 @@ public class EHospitalEndpoint {
 
     }
 
-    private com.example.auth.PatientDetails mapUser(User user) {
+    private com.example.auth.PatientDetails mapUser(Patient user) {
         com.example.auth.PatientDetails PatientDetails = new com.example.auth.PatientDetails();
 
         PatientDetails.setId(user.getId());

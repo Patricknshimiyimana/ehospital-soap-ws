@@ -25,9 +25,9 @@ import jakarta.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="registered" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
+ *         &lt;element name="authenticated" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
  *         &lt;element name="message" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
- *         &lt;element name="Pharmacist" type="{http://example.com/auth}PharmacistDetails" minOccurs="0"/&gt;
+ *         &lt;element name="token" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -38,33 +38,33 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "registered",
+    "authenticated",
     "message",
-    "pharmacist"
+    "token"
 })
-@XmlRootElement(name = "PharmacistRegisterResponse")
-public class PharmacistRegisterResponse {
+@XmlRootElement(name = "PhysicianAuthResponse")
+public class PhysicianAuthResponse {
 
-    protected boolean registered;
+    protected boolean authenticated;
     @XmlElement(required = true)
     protected String message;
-    @XmlElement(name = "Pharmacist")
-    protected PharmacistDetails pharmacist;
+    @XmlElement(required = true)
+    protected String token;
 
     /**
-     * Gets the value of the registered property.
+     * Gets the value of the authenticated property.
      * 
      */
-    public boolean isRegistered() {
-        return registered;
+    public boolean isAuthenticated() {
+        return authenticated;
     }
 
     /**
-     * Sets the value of the registered property.
+     * Sets the value of the authenticated property.
      * 
      */
-    public void setRegistered(boolean value) {
-        this.registered = value;
+    public void setAuthenticated(boolean value) {
+        this.authenticated = value;
     }
 
     /**
@@ -92,27 +92,27 @@ public class PharmacistRegisterResponse {
     }
 
     /**
-     * Gets the value of the pharmacist property.
+     * Gets the value of the token property.
      * 
      * @return
      *     possible object is
-     *     {@link PharmacistDetails }
+     *     {@link String }
      *     
      */
-    public PharmacistDetails getPharmacist() {
-        return pharmacist;
+    public String getToken() {
+        return token;
     }
 
     /**
-     * Sets the value of the pharmacist property.
+     * Sets the value of the token property.
      * 
      * @param value
      *     allowed object is
-     *     {@link PharmacistDetails }
+     *     {@link String }
      *     
      */
-    public void setPharmacist(PharmacistDetails value) {
-        this.pharmacist = value;
+    public void setToken(String value) {
+        this.token = value;
     }
 
 }

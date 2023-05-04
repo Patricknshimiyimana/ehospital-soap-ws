@@ -25,9 +25,9 @@ import jakarta.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="registered" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
  *         &lt;element name="message" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
- *         &lt;element name="Pharmacist" type="{http://example.com/auth}PharmacistDetails" minOccurs="0"/&gt;
+ *         &lt;element name="User" type="{http://example.com/auth}PatientDetails"/&gt;
+ *         &lt;element name="Consultation" type="{http://example.com/auth}PatientConsultation"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -38,34 +38,19 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "registered",
     "message",
-    "pharmacist"
+    "user",
+    "consultation"
 })
-@XmlRootElement(name = "PharmacistRegisterResponse")
-public class PharmacistRegisterResponse {
+@XmlRootElement(name = "GiveConsultationResponse")
+public class GiveConsultationResponse {
 
-    protected boolean registered;
     @XmlElement(required = true)
     protected String message;
-    @XmlElement(name = "Pharmacist")
-    protected PharmacistDetails pharmacist;
-
-    /**
-     * Gets the value of the registered property.
-     * 
-     */
-    public boolean isRegistered() {
-        return registered;
-    }
-
-    /**
-     * Sets the value of the registered property.
-     * 
-     */
-    public void setRegistered(boolean value) {
-        this.registered = value;
-    }
+    @XmlElement(name = "User", required = true)
+    protected PatientDetails user;
+    @XmlElement(name = "Consultation", required = true)
+    protected PatientConsultation consultation;
 
     /**
      * Gets the value of the message property.
@@ -92,27 +77,51 @@ public class PharmacistRegisterResponse {
     }
 
     /**
-     * Gets the value of the pharmacist property.
+     * Gets the value of the user property.
      * 
      * @return
      *     possible object is
-     *     {@link PharmacistDetails }
+     *     {@link PatientDetails }
      *     
      */
-    public PharmacistDetails getPharmacist() {
-        return pharmacist;
+    public PatientDetails getUser() {
+        return user;
     }
 
     /**
-     * Sets the value of the pharmacist property.
+     * Sets the value of the user property.
      * 
      * @param value
      *     allowed object is
-     *     {@link PharmacistDetails }
+     *     {@link PatientDetails }
      *     
      */
-    public void setPharmacist(PharmacistDetails value) {
-        this.pharmacist = value;
+    public void setUser(PatientDetails value) {
+        this.user = value;
+    }
+
+    /**
+     * Gets the value of the consultation property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link PatientConsultation }
+     *     
+     */
+    public PatientConsultation getConsultation() {
+        return consultation;
+    }
+
+    /**
+     * Sets the value of the consultation property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link PatientConsultation }
+     *     
+     */
+    public void setConsultation(PatientConsultation value) {
+        this.consultation = value;
     }
 
 }

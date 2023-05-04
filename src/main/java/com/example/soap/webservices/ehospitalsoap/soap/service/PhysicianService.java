@@ -38,4 +38,12 @@ public class PhysicianService {
 		List<Physician> userList = new ArrayList<>(physicians.values());
 		return userList.toArray(new Physician[userList.size()]);
 	}
+
+	public boolean authenticatePhysician(String email, String password) {
+		Physician user = findByEmail(email);
+		if (user != null && user.getPassword().equals(password)) {
+			return true;
+		}
+		return false;
+	}
 }

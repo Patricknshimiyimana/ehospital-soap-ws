@@ -26,7 +26,8 @@ import jakarta.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="AuthorizationHeader" type="{http://example.com/auth}AuthorizationHeader"/&gt;
- *         &lt;element name="physicianEmail" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="patientUsername" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="diseaseName" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -38,15 +39,18 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
     "authorizationHeader",
-    "physicianEmail"
+    "patientUsername",
+    "diseaseName"
 })
-@XmlRootElement(name = "SelectPhysicianRequest")
-public class SelectPhysicianRequest {
+@XmlRootElement(name = "GiveConsultationRequest")
+public class GiveConsultationRequest {
 
     @XmlElement(name = "AuthorizationHeader", required = true)
     protected AuthorizationHeader authorizationHeader;
     @XmlElement(required = true)
-    protected String physicianEmail;
+    protected String patientUsername;
+    @XmlElement(required = true)
+    protected String diseaseName;
 
     /**
      * Gets the value of the authorizationHeader property.
@@ -73,27 +77,51 @@ public class SelectPhysicianRequest {
     }
 
     /**
-     * Gets the value of the physicianEmail property.
+     * Gets the value of the patientUsername property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getPhysicianEmail() {
-        return physicianEmail;
+    public String getPatientUsername() {
+        return patientUsername;
     }
 
     /**
-     * Sets the value of the physicianEmail property.
+     * Sets the value of the patientUsername property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setPhysicianEmail(String value) {
-        this.physicianEmail = value;
+    public void setPatientUsername(String value) {
+        this.patientUsername = value;
+    }
+
+    /**
+     * Gets the value of the diseaseName property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDiseaseName() {
+        return diseaseName;
+    }
+
+    /**
+     * Sets the value of the diseaseName property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDiseaseName(String value) {
+        this.diseaseName = value;
     }
 
 }

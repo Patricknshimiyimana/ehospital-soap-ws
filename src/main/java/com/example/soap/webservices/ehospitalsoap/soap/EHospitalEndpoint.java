@@ -8,37 +8,44 @@ import java.util.Date;
 import java.util.List;
 
 import javax.crypto.spec.SecretKeySpec;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
-import com.example.auth.AuthRequest;
-import com.example.auth.AuthResponse;
-import com.example.auth.AuthorizationHeader;
-import com.example.auth.GetAllPharmacistsRequest;
-import com.example.auth.GetAllPharmacistsResponse;
-import com.example.auth.GetAllPhysiciansRequest;
-import com.example.auth.GetAllPhysiciansResponse;
-import com.example.auth.GiveConsultationRequest;
-import com.example.auth.GiveConsultationResponse;
-import com.example.auth.PatientConsultation;
-import com.example.auth.PhysicianRegisterRequest;
-import com.example.auth.PhysicianRegisterResponse;
-import com.example.auth.SelectPhysicianRequest;
-import com.example.auth.SelectPhysicianResponse;
-import com.example.auth.UserGenderType;
-import com.example.auth.PatientRegisterRequest;
-import com.example.auth.PatientRegisterResponse;
-import com.example.auth.PharmacistRegisterRequest;
-import com.example.auth.PharmacistRegisterResponse;
-import com.example.auth.PhysicianAuthRequest;
-import com.example.auth.PhysicianAuthResponse;
-import com.example.auth.UserRoleTypes;
+import com.example.ehospital.AuthRequest;
+import com.example.ehospital.AuthResponse;
+import com.example.ehospital.AuthorizationHeader;
+import com.example.ehospital.GetAllMedecinesRequest;
+import com.example.ehospital.GetAllMedecinesResponse;
+import com.example.ehospital.GetAllPharmacistsRequest;
+import com.example.ehospital.GetAllPharmacistsResponse;
+import com.example.ehospital.GetAllPhysiciansRequest;
+import com.example.ehospital.GetAllPhysiciansResponse;
+import com.example.ehospital.GiveConsultationRequest;
+import com.example.ehospital.GiveConsultationResponse;
+import com.example.ehospital.MedecineDetails;
+import com.example.ehospital.PatientConsultation;
+import com.example.ehospital.PhysicianRegisterRequest;
+import com.example.ehospital.PhysicianRegisterResponse;
+import com.example.ehospital.SelectPhysicianRequest;
+import com.example.ehospital.SelectPhysicianResponse;
+import com.example.ehospital.UserGenderType;
+import com.example.ehospital.PatientRegisterRequest;
+import com.example.ehospital.PatientRegisterResponse;
+import com.example.ehospital.PharmacistLoginRequest;
+import com.example.ehospital.PharmacistLoginResponse;
+import com.example.ehospital.PharmacistRegisterRequest;
+import com.example.ehospital.PharmacistRegisterResponse;
+import com.example.ehospital.PhysicianAuthRequest;
+import com.example.ehospital.PhysicianAuthResponse;
+import com.example.ehospital.UserRoleTypes;
+import com.example.ehospital.AddMedecineRequest;
+import com.example.ehospital.AddMedecineResponse;
 import com.example.soap.webservices.ehospitalsoap.soap.bean.Consultation;
 import com.example.soap.webservices.ehospitalsoap.soap.bean.Patient;
+import com.example.soap.webservices.ehospitalsoap.soap.bean.Medecine;
 import com.example.soap.webservices.ehospitalsoap.soap.bean.enums.Gender;
 import com.example.soap.webservices.ehospitalsoap.soap.bean.enums.Status;
 import com.example.soap.webservices.ehospitalsoap.soap.bean.enums.UserRoles;
@@ -46,6 +53,7 @@ import com.example.soap.webservices.ehospitalsoap.soap.bean.Pharmacist;
 import com.example.soap.webservices.ehospitalsoap.soap.bean.Physician;
 import com.example.soap.webservices.ehospitalsoap.soap.service.PharmacistService;
 import com.example.soap.webservices.ehospitalsoap.soap.service.PhysicianService;
+import com.example.soap.webservices.ehospitalsoap.soap.service.MedecineService;
 import com.example.soap.webservices.ehospitalsoap.soap.service.PatientService;
 
 import io.jsonwebtoken.Claims;
@@ -65,7 +73,10 @@ public class EHospitalEndpoint {
     @Autowired
     private PharmacistService pharmacistService;
 
-    @PayloadRoot(namespace = "http://example.com/auth", localPart = "AuthRequest")
+    @Autowired
+    private MedecineService medecineService;
+
+    @PayloadRoot(namespace = "http://example.com/ehospital", localPart = "AuthRequest")
     @ResponsePayload
     public AuthResponse authenticate(@RequestPayload AuthRequest request) {
 
@@ -101,7 +112,7 @@ public class EHospitalEndpoint {
         return response;
     }
 
-    @PayloadRoot(namespace = "http://example.com/auth", localPart = "PhysicianAuthRequest")
+    @PayloadRoot(namespace = "http://example.com/ehospital", localPart = "PhysicianAuthRequest")
     @ResponsePayload
     public PhysicianAuthResponse authenticatePhysician(@RequestPayload PhysicianAuthRequest request) {
 
@@ -137,7 +148,43 @@ public class EHospitalEndpoint {
         return response;
     }
 
-    @PayloadRoot(namespace = "http://example.com/auth", localPart = "GetAllPhysiciansRequest")
+    @PayloadRoot(namespace = "http://example.com/ehospital", localPart = "PharmacistLoginRequest")
+    @ResponsePayload
+    public PharmacistLoginResponse authenticatePharmacist(@RequestPayload PharmacistLoginRequest request) {
+
+        PharmacistLoginResponse response = new PharmacistLoginResponse();
+
+        boolean authenticated = pharmacistService.authenticatePharmacist(request.getPhone(), request.getPassword());
+        response.setAuthenticated(authenticated);
+
+        if (!authenticated) {
+            response.setMessage("Incorrect credentials");
+            return response;
+        }
+
+        Pharmacist existingPharmacist = pharmacistService.findByPhone(request.getPhone());
+
+        Instant now = Instant.now();
+        Instant expirationTime = now.plus(10, ChronoUnit.HOURS);
+        String secretKey = "mysecretkeywhichmustnotbelessthan256bitslong";
+        Key signingKey = new SecretKeySpec(secretKey.getBytes(), SignatureAlgorithm.HS256.getJcaName());
+
+        String jwtToken = Jwts.builder()
+                .setSubject(request.getPhone())
+                .claim("phone", request.getPhone())
+                .claim("role", existingPharmacist.getRole().name())
+                .setIssuedAt(Date.from(now))
+                .setExpiration(Date.from(expirationTime))
+                .signWith(signingKey)
+                .compact();
+
+        response.setMessage("Logged in successfully");
+        response.setToken(jwtToken);
+
+        return response;
+    }
+
+    @PayloadRoot(namespace = "http://example.com/ehospital", localPart = "GetAllPhysiciansRequest")
     @ResponsePayload
     public GetAllPhysiciansResponse getAllPhysicians(@RequestPayload GetAllPhysiciansRequest request) {
 
@@ -157,7 +204,7 @@ public class EHospitalEndpoint {
         return response;
     }
 
-    @PayloadRoot(namespace = "http://example.com/auth", localPart = "GetAllPharmacistsRequest")
+    @PayloadRoot(namespace = "http://example.com/ehospital", localPart = "GetAllPharmacistsRequest")
     @ResponsePayload
     public GetAllPharmacistsResponse getAllPhysicians(@RequestPayload GetAllPharmacistsRequest request) {
 
@@ -177,7 +224,7 @@ public class EHospitalEndpoint {
         return response;
     }
 
-    @PayloadRoot(namespace = "http://example.com/auth", localPart = "PatientRegisterRequest")
+    @PayloadRoot(namespace = "http://example.com/ehospital", localPart = "PatientRegisterRequest")
     @ResponsePayload
     public PatientRegisterResponse registerUser(@RequestPayload PatientRegisterRequest request) {
 
@@ -204,7 +251,7 @@ public class EHospitalEndpoint {
         return response;
     }
 
-    @PayloadRoot(namespace = "http://example.com/auth", localPart = "PhysicianRegisterRequest")
+    @PayloadRoot(namespace = "http://example.com/ehospital", localPart = "PhysicianRegisterRequest")
     @ResponsePayload
     public PhysicianRegisterResponse registerPhysician(@RequestPayload PhysicianRegisterRequest request) {
 
@@ -232,7 +279,7 @@ public class EHospitalEndpoint {
         return response;
     }
 
-    @PayloadRoot(namespace = "http://example.com/auth", localPart = "PharmacistRegisterRequest")
+    @PayloadRoot(namespace = "http://example.com/ehospital", localPart = "PharmacistRegisterRequest")
     @ResponsePayload
     public PharmacistRegisterResponse registerPharmacist(@RequestPayload PharmacistRegisterRequest request) {
 
@@ -260,7 +307,7 @@ public class EHospitalEndpoint {
         return response;
     }
 
-    @PayloadRoot(namespace = "http://example.com/auth", localPart = "SelectPhysicianRequest")
+    @PayloadRoot(namespace = "http://example.com/ehospital", localPart = "SelectPhysicianRequest")
     @ResponsePayload
     public SelectPhysicianResponse selectPhysician(@RequestPayload SelectPhysicianRequest request) throws Exception {
 
@@ -292,7 +339,7 @@ public class EHospitalEndpoint {
         return response;
     }
 
-    @PayloadRoot(namespace = "http://example.com/auth", localPart = "GiveConsultationRequest")
+    @PayloadRoot(namespace = "http://example.com/ehospital", localPart = "GiveConsultationRequest")
     @ResponsePayload
     public GiveConsultationResponse giveConsultation(@RequestPayload GiveConsultationRequest request) throws Exception {
 
@@ -332,11 +379,93 @@ public class EHospitalEndpoint {
         return response;
     }
 
+    @PayloadRoot(namespace = "http://example.com/ehospital", localPart = "AddMedecineRequest")
+    @ResponsePayload
+    public AddMedecineResponse addMedecine(@RequestPayload AddMedecineRequest request) {
+
+        AuthorizationHeader authHeader = request.getAuthorizationHeader();
+        String token = authHeader.getToken();
+        System.out.println("ahhahahahah" + token);
+
+        Claims claims = parseJwtToken(token);
+        System.out.println("claimsssss" + claims);
+
+        String pharmacistPhone = claims.get("phone", String.class);
+
+        Pharmacist pharmacist = pharmacistService.findByPhone(pharmacistPhone);
+
+        if (pharmacist == null) {
+            throw new RuntimeException("Unauthorized");
+        }
+
+        // validate request data
+        if (request.getMedName() == "[string]" || request.getMedName().isEmpty()
+                || request.getMedPrice() == 0
+                || request.getExpirationDate().equals("")) {
+            throw new RuntimeException("Please fill in all fields correctly");
+        }
+
+        Medecine newMed = new Medecine(request.getMedName(), request.getMedPrice(),
+                request.getExpirationDate().toString());
+
+        Status status = medecineService.addMedecine(newMed);
+
+        AddMedecineResponse response = new AddMedecineResponse();
+        response.setAdded(status == Status.SUCCESS ? true : false);
+        response.setMessage("Medecine added successfuly");
+        response.setMedecine(mapMed(newMed));
+
+        return response;
+    }
+
+    @PayloadRoot(namespace = "http://example.com/ehospital", localPart = "GetAllMedecinesRequest")
+    @ResponsePayload
+    public GetAllMedecinesResponse getMedecine(@RequestPayload GetAllMedecinesRequest request) {
+
+        AuthorizationHeader authHeader = request.getAuthorizationHeader();
+        String token = authHeader.getToken();
+        System.out.println("ahhahahahah" + token);
+
+        Claims claims = parseJwtToken(token);
+        System.out.println("claimsssss" + claims);
+
+        String pharmacistPhone = claims.get("phone", String.class);
+
+        Pharmacist pharmacist = pharmacistService.findByPhone(pharmacistPhone);
+
+        if (pharmacist == null) {
+            throw new RuntimeException("Unauthorized");
+        }
+
+        GetAllMedecinesResponse response = new GetAllMedecinesResponse();
+
+        List<Medecine> availableMeds = Arrays.asList(medecineService.getMedicines());
+
+        for (Medecine med : availableMeds) {
+            response.getMedecines().add(mapMed(med));
+        }
+        return response;
+    }
+
     private PatientConsultation mapConsultation(Consultation consultation) {
         PatientConsultation patientConsultation = new PatientConsultation();
         patientConsultation.setDiseaseName(consultation.getDisease());
 
         return patientConsultation;
+    }
+
+    private MedecineDetails mapMed(Medecine med) {
+        MedecineDetails newMed = new MedecineDetails();
+
+        double medPrice = med.getMedPrice();
+        // med.getMedPrice() returns a double convert it to string
+        String medPriceString = String.valueOf(medPrice);
+
+        newMed.setMedName(med.getMedName());
+        newMed.setMedPrice(medPriceString);
+        newMed.setExpirationDate(med.getExpirationDate());
+
+        return newMed;
     }
 
     private UserRoles mapUserRoles(UserRoleTypes role) {
@@ -360,8 +489,8 @@ public class EHospitalEndpoint {
 
     }
 
-    private com.example.auth.PatientDetails mapUser(Patient user) {
-        com.example.auth.PatientDetails PatientDetails = new com.example.auth.PatientDetails();
+    private com.example.ehospital.PatientDetails mapUser(Patient user) {
+        com.example.ehospital.PatientDetails PatientDetails = new com.example.ehospital.PatientDetails();
 
         PatientDetails.setId(user.getId());
         PatientDetails.setUsername(user.getUsername());
@@ -374,8 +503,8 @@ public class EHospitalEndpoint {
         return PatientDetails;
     }
 
-    private com.example.auth.PhysicianDetails mapPhysicianDetails(Physician user) {
-        com.example.auth.PhysicianDetails physicianDetails = new com.example.auth.PhysicianDetails();
+    private com.example.ehospital.PhysicianDetails mapPhysicianDetails(Physician user) {
+        com.example.ehospital.PhysicianDetails physicianDetails = new com.example.ehospital.PhysicianDetails();
 
         physicianDetails.setId(user.getId());
         physicianDetails.setEmail(user.getEmail());
@@ -387,8 +516,8 @@ public class EHospitalEndpoint {
         return physicianDetails;
     }
 
-    private com.example.auth.PharmacistDetails mapPharmacistDetails(Pharmacist user) {
-        com.example.auth.PharmacistDetails pharmacistDetails = new com.example.auth.PharmacistDetails();
+    private com.example.ehospital.PharmacistDetails mapPharmacistDetails(Pharmacist user) {
+        com.example.ehospital.PharmacistDetails pharmacistDetails = new com.example.ehospital.PharmacistDetails();
 
         pharmacistDetails.setId(user.getId());
         pharmacistDetails.setPhone(user.getPhone());

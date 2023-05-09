@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:tns="http://example.com/auth"
-    targetNamespace="http://example.com/auth"
+    xmlns:tns="http://example.com/ehospital"
+    targetNamespace="http://example.com/ehospital"
     elementFormDefault="qualified">
 
     <xs:element name="PatientRegisterRequest">
@@ -112,6 +112,25 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="PharmacistLoginRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="phone" type="xs:string" />
+                <xs:element name="password" type="xs:string" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="PharmacistLoginResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="authenticated" type="xs:boolean" />
+                <xs:element name="message" type="xs:string" />
+                <xs:element name="token" type="xs:string" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
     <xs:element name="GetAllPhysiciansRequest">
         <xs:complexType>
             <xs:sequence>
@@ -183,6 +202,43 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="AddMedecineRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="AuthorizationHeader" type="tns:AuthorizationHeader" minOccurs="1" />
+                <xs:element name="medName" type="xs:string"></xs:element>
+                <xs:element name="medPrice" type="xs:double"></xs:element>
+                <xs:element name="expirationDate" type="xs:string"></xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="AddMedecineResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Added" type="xs:boolean" />
+                <xs:element name="message" type="xs:string" />
+                <xs:element name="Medecine" type="tns:MedecineDetails" minOccurs="1" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetAllMedecinesRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="AuthorizationHeader" type="tns:AuthorizationHeader" minOccurs="1" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetAllMedecinesResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Medecines" type="tns:MedecineDetails" maxOccurs="unbounded"></xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
     <xs:complexType name="PatientDetails">
         <xs:sequence>
             <xs:element name="id" type="xs:string"></xs:element>
@@ -244,6 +300,14 @@
         <xs:sequence>
             <xs:element name="PatientUsername" type="xs:string" />
             <xs:element name="diseaseName" type="xs:string" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="MedecineDetails">
+        <xs:sequence>
+            <xs:element name="medName" type="xs:string"></xs:element>
+            <xs:element name="medPrice" type="xs:string"></xs:element>
+            <xs:element name="expirationDate" type="xs:string"></xs:element>
         </xs:sequence>
     </xs:complexType>
 

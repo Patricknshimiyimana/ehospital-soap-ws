@@ -1,0 +1,54 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-ehospitalsoapApplication<ehospital>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.example.soap.webservices.ehospitalsoap.ehospitalsoapApplication",
+      "projectName": "ehospital",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-EhospitalSoapApplication<ehospital>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.example.soap.webservices.soapcoursemanagement.EhospitalSoapApplication",
+      "projectName": "ehospital",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-SoapCourseManagementApplication<ehospital>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.example.soap.webservices.soapcoursemanagement.SoapCourseManagementApplication",
+      "projectName": "ehospital",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-EhospitalSoapApplication<ehospital>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.example.soap.webservices.ehospitalsoap.EhospitalSoapApplication",
+      "projectName": "ehospital",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-EhospitalSoapApplication<soap-course-management>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.example.soap.webservices.ehospitalsoap.EhospitalSoapApplication",
+      "projectName": "soap-course-management",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}

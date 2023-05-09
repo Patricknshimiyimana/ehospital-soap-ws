@@ -1,8 +1,8 @@
 // package com.example.soap.webservices.ehospitalsoap.soap.utils;
 
-// import com.example.auth.Physician;
-// import com.example.auth.UserGenderType;
-// import com.example.auth.UserRoleTypes;
+// import com.example.ehospital.Physician;
+// import com.example.ehospital.UserGenderType;
+// import com.example.ehospital.UserRoleTypes;
 // import com.example.soap.webservices.ehospitalsoap.soap.bean.Pharmacist;
 // import com.example.soap.webservices.ehospitalsoap.soap.bean.User;
 // import com.example.soap.webservices.ehospitalsoap.soap.bean.enums.Gender;
@@ -30,9 +30,9 @@
 
 // }
 
-// public com.example.auth.PatientDetails mapUser(User user) {
-// com.example.auth.PatientDetails PatientDetails = new
-// com.example.auth.PatientDetails();
+// public com.example.ehospital.PatientDetails mapUser(User user) {
+// com.example.ehospital.PatientDetails PatientDetails = new
+// com.example.ehospital.PatientDetails();
 
 // PatientDetails.setId(user.getId());
 // PatientDetails.setUsername(user.getUsername());
@@ -46,10 +46,10 @@
 // return PatientDetails;
 // }
 
-// public static com.example.auth.PharmacistDetails
+// public static com.example.ehospital.PharmacistDetails
 // mapPharmacistDetails(Pharmacist user) {
-// com.example.auth.PharmacistDetails pharmacistDetails = new
-// com.example.auth.PharmacistDetails();
+// com.example.ehospital.PharmacistDetails pharmacistDetails = new
+// com.example.ehospital.PharmacistDetails();
 
 // pharmacistDetails.setId(user.getId());
 // pharmacistDetails.setPhone(user.getPhone());

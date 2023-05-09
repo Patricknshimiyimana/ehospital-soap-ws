@@ -36,9 +36,9 @@ public class Patient {
 
     }
 
-    // public User(String fullNames2, String username2, com.example.auth.Gender
+    // public User(String fullNames2, String username2, com.example.ehospital.Gender
     // mapGender, int age2,
-    // com.example.auth.UserRoles mapUserRoles, String password2) {
+    // com.example.ehospital.UserRoles mapUserRoles, String password2) {
     // }
 
     // public User() {

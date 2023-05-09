@@ -38,4 +38,13 @@ public class PharmacistService {
 		List<Pharmacist> userList = new ArrayList<>(pharmacists.values());
 		return userList.toArray(new Pharmacist[userList.size()]);
 	}
+
+	public boolean authenticatePharmacist(String phone, String password) {
+		Pharmacist user = findByPhone(phone);
+		if (user != null && user.getPassword().equals(password)) {
+			return true;
+		}
+		return false;
+	}
+
 }

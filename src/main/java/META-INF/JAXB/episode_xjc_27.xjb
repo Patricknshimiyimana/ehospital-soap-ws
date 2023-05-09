@@ -8,16 +8,15 @@ Any modifications to this file will be lost upon recompilation of the source sch
 Generated on: 2023.05.01 at 10:46:33 PM CAT 
 
   -->
-  <bindings scd="x-schema::tns" xmlns:tns="http://example.com/auth">
+  <bindings scd="x-schema::tns" xmlns:tns="http://example.com/ehospital">
     <schemaBindings map="false">
-      <package name="com.example.auth"/>
+      <package name="com.example.auth" />
     </schemaBindings>
     <bindings scd="~tns:AuthRequest">
-      <class ref="com.example.auth.AuthRequest"/>
+      <class ref="com.example.ehospital.AuthRequest" />
     </bindings>
     <bindings scd="~tns:AuthResponse">
-      <class ref="com.example.auth.AuthResponse"/>
+      <class ref="com.example.ehospital.AuthResponse" />
     </bindings>
   </bindings>
 </bindings>
-

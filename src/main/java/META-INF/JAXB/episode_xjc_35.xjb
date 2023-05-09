@@ -8,28 +8,27 @@ Any modifications to this file will be lost upon recompilation of the source sch
 Generated on: 2023.05.02 at 01:34:18 PM CAT 
 
   -->
-  <bindings scd="x-schema::tns" xmlns:tns="http://example.com/auth">
+  <bindings scd="x-schema::tns" xmlns:tns="http://example.com/ehospital">
     <schemaBindings map="false">
-      <package name="com.example.auth"/>
+      <package name="com.example.auth" />
     </schemaBindings>
     <bindings scd="tns:AuthRequest">
-      <class ref="com.example.auth.AuthRequest"/>
+      <class ref="com.example.ehospital.AuthRequest" />
     </bindings>
     <bindings scd="tns:AuthResponse">
-      <class ref="com.example.auth.AuthResponse"/>
+      <class ref="com.example.ehospital.AuthResponse" />
     </bindings>
     <bindings scd="tns:GetAllUsersRequest">
-      <class ref="com.example.auth.GetAllUsersRequest"/>
+      <class ref="com.example.ehospital.GetAllUsersRequest" />
     </bindings>
     <bindings scd="~tns:AuthorizationHeader">
-      <class ref="com.example.auth.AuthorizationHeader"/>
+      <class ref="com.example.ehospital.AuthorizationHeader" />
     </bindings>
     <bindings scd="tns:GetAllUsersResponse">
-      <class ref="com.example.auth.GetAllUsersResponse"/>
+      <class ref="com.example.ehospital.GetAllUsersResponse" />
     </bindings>
     <bindings scd="~tns:User">
-      <class ref="com.example.auth.User"/>
+      <class ref="com.example.ehospital.User" />
     </bindings>
   </bindings>
 </bindings>
-

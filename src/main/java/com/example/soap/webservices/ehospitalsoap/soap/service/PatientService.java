@@ -8,8 +8,10 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 import com.example.soap.webservices.ehospitalsoap.soap.bean.Physician;
+import com.example.soap.webservices.ehospitalsoap.soap.bean.Prescription;
 import com.example.soap.webservices.ehospitalsoap.soap.bean.Consultation;
 import com.example.soap.webservices.ehospitalsoap.soap.bean.Patient;
+import com.example.soap.webservices.ehospitalsoap.soap.bean.Pharmacist;
 import com.example.soap.webservices.ehospitalsoap.soap.bean.enums.Gender;
 import com.example.soap.webservices.ehospitalsoap.soap.bean.enums.Status;
 import com.example.soap.webservices.ehospitalsoap.soap.bean.enums.UserRoles;
@@ -61,10 +63,27 @@ public class PatientService {
 		return patient;
 	}
 
+	public static Patient selectPharmacist(String username, Pharmacist selectedPharmacist) throws Exception {
+		Patient patient = users.get(username);
+		patient.setSelectedPharmacist(selectedPharmacist);
+		users.put(username, patient);
+
+		return patient;
+	}
+
 	public static Patient getConsultation(String username, Consultation consultation)
 			throws Exception {
 		Patient patient = users.get(username);
 		patient.setConsultation(consultation);
+		users.put(username, patient);
+
+		return patient;
+	}
+
+	public static Patient getPrescription(String username, Prescription prescription)
+			throws Exception {
+		Patient patient = users.get(username);
+		patient.setPrescription(prescription);
 		users.put(username, patient);
 
 		return patient;

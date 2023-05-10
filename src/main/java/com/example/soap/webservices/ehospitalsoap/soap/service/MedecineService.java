@@ -27,7 +27,7 @@ public class MedecineService {
 		return medValues.toArray(new Medecine[medicines.size()]);
 	}
 
-	public static Medecine findMedicine(String medName) {
+	public Medecine findMedicine(String medName) {
 		return medicines.get(medName);
 	}
 }

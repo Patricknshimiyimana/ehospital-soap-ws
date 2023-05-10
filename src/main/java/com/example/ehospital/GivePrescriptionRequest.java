@@ -26,6 +26,8 @@ import jakarta.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element name="AuthorizationHeader" type="{http://example.com/ehospital}AuthorizationHeader"/&gt;
+ *         &lt;element name="patientUsername" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="medecineName" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -36,13 +38,19 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "authorizationHeader"
+    "authorizationHeader",
+    "patientUsername",
+    "medecineName"
 })
-@XmlRootElement(name = "GetAllPharmacistsRequest")
-public class GetAllPharmacistsRequest {
+@XmlRootElement(name = "GivePrescriptionRequest")
+public class GivePrescriptionRequest {
 
     @XmlElement(name = "AuthorizationHeader", required = true)
     protected AuthorizationHeader authorizationHeader;
+    @XmlElement(required = true)
+    protected String patientUsername;
+    @XmlElement(required = true)
+    protected String medecineName;
 
     /**
      * Gets the value of the authorizationHeader property.
@@ -66,6 +74,54 @@ public class GetAllPharmacistsRequest {
      */
     public void setAuthorizationHeader(AuthorizationHeader value) {
         this.authorizationHeader = value;
+    }
+
+    /**
+     * Gets the value of the patientUsername property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getPatientUsername() {
+        return patientUsername;
+    }
+
+    /**
+     * Sets the value of the patientUsername property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setPatientUsername(String value) {
+        this.patientUsername = value;
+    }
+
+    /**
+     * Gets the value of the medecineName property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getMedecineName() {
+        return medecineName;
+    }
+
+    /**
+     * Sets the value of the medecineName property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setMedecineName(String value) {
+        this.medecineName = value;
     }
 
 }

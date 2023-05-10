@@ -182,6 +182,25 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="SelectPharmacistRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="AuthorizationHeader" type="tns:AuthorizationHeader" minOccurs="1" />
+                <xs:element name="pharmacistPhone" type="xs:string" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="SelectPharmacistResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="message" type="xs:string" />
+                <xs:element name="User" type="tns:PatientDetails" minOccurs="1" />
+                <xs:element name="selectedPharmacist" type="tns:PharmacistDetails" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
     <xs:element name="GiveConsultationRequest">
         <xs:complexType>
             <xs:sequence>
@@ -198,6 +217,26 @@
                 <xs:element name="message" type="xs:string" />
                 <xs:element name="User" type="tns:PatientDetails" minOccurs="1" />
                 <xs:element name="Consultation" type="tns:PatientConsultation" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GivePrescriptionRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="AuthorizationHeader" type="tns:AuthorizationHeader" minOccurs="1" />
+                <xs:element name="patientUsername" type="xs:string" />
+                <xs:element name="medecineName" type="xs:string" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GivePrescriptionResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="message" type="xs:string" />
+                <xs:element name="User" type="tns:PatientDetails" minOccurs="1" />
+                <xs:element name="Prescription" type="tns:PatientPrescription" />
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -300,6 +339,15 @@
         <xs:sequence>
             <xs:element name="PatientUsername" type="xs:string" />
             <xs:element name="diseaseName" type="xs:string" />
+            <xs:element name="medecineName" type="xs:string" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="PatientPrescription">
+        <xs:sequence>
+            <xs:element name="PatientUsername" type="xs:string" />
+            <xs:element name="diseaseName" type="xs:string" />
+            <xs:element name="Medecine" type="tns:MedecineDetails" />
         </xs:sequence>
     </xs:complexType>
 

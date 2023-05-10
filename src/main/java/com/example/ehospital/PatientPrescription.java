@@ -11,22 +11,21 @@ package com.example.ehospital;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for anonymous complex type.
+ * <p>Java class for PatientPrescription complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType&gt;
+ * &lt;complexType name="PatientPrescription"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="Added" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
- *         &lt;element name="message" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="PatientUsername" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="diseaseName" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
  *         &lt;element name="Medecine" type="{http://example.com/ehospital}MedecineDetails"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
@@ -37,59 +36,66 @@ import jakarta.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "added",
-    "message",
+@XmlType(name = "PatientPrescription", propOrder = {
+    "patientUsername",
+    "diseaseName",
     "medecine"
 })
-@XmlRootElement(name = "AddMedecineResponse")
-public class AddMedecineResponse {
+public class PatientPrescription {
 
-    @XmlElement(name = "Added")
-    protected boolean added;
+    @XmlElement(name = "PatientUsername", required = true)
+    protected String patientUsername;
     @XmlElement(required = true)
-    protected String message;
+    protected String diseaseName;
     @XmlElement(name = "Medecine", required = true)
     protected MedecineDetails medecine;
 
     /**
-     * Gets the value of the added property.
-     * 
-     */
-    public boolean isAdded() {
-        return added;
-    }
-
-    /**
-     * Sets the value of the added property.
-     * 
-     */
-    public void setAdded(boolean value) {
-        this.added = value;
-    }
-
-    /**
-     * Gets the value of the message property.
+     * Gets the value of the patientUsername property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getMessage() {
-        return message;
+    public String getPatientUsername() {
+        return patientUsername;
     }
 
     /**
-     * Sets the value of the message property.
+     * Sets the value of the patientUsername property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setMessage(String value) {
-        this.message = value;
+    public void setPatientUsername(String value) {
+        this.patientUsername = value;
+    }
+
+    /**
+     * Gets the value of the diseaseName property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDiseaseName() {
+        return diseaseName;
+    }
+
+    /**
+     * Sets the value of the diseaseName property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDiseaseName(String value) {
+        this.diseaseName = value;
     }
 
     /**

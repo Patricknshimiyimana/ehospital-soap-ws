@@ -25,10 +25,15 @@ import com.example.ehospital.GetAllPhysiciansRequest;
 import com.example.ehospital.GetAllPhysiciansResponse;
 import com.example.ehospital.GiveConsultationRequest;
 import com.example.ehospital.GiveConsultationResponse;
+import com.example.ehospital.GivePrescriptionRequest;
+import com.example.ehospital.GivePrescriptionResponse;
 import com.example.ehospital.MedecineDetails;
 import com.example.ehospital.PatientConsultation;
+import com.example.ehospital.PatientPrescription;
 import com.example.ehospital.PhysicianRegisterRequest;
 import com.example.ehospital.PhysicianRegisterResponse;
+import com.example.ehospital.SelectPharmacistRequest;
+import com.example.ehospital.SelectPharmacistResponse;
 import com.example.ehospital.SelectPhysicianRequest;
 import com.example.ehospital.SelectPhysicianResponse;
 import com.example.ehospital.UserGenderType;
@@ -51,6 +56,7 @@ import com.example.soap.webservices.ehospitalsoap.soap.bean.enums.Status;
 import com.example.soap.webservices.ehospitalsoap.soap.bean.enums.UserRoles;
 import com.example.soap.webservices.ehospitalsoap.soap.bean.Pharmacist;
 import com.example.soap.webservices.ehospitalsoap.soap.bean.Physician;
+import com.example.soap.webservices.ehospitalsoap.soap.bean.Prescription;
 import com.example.soap.webservices.ehospitalsoap.soap.service.PharmacistService;
 import com.example.soap.webservices.ehospitalsoap.soap.service.PhysicianService;
 import com.example.soap.webservices.ehospitalsoap.soap.service.MedecineService;
@@ -339,6 +345,39 @@ public class EHospitalEndpoint {
         return response;
     }
 
+    @PayloadRoot(namespace = "http://example.com/ehospital", localPart = "SelectPharmacistRequest")
+    @ResponsePayload
+    public SelectPharmacistResponse selectPhysician(@RequestPayload SelectPharmacistRequest request) throws Exception {
+
+        SelectPharmacistResponse response = new SelectPharmacistResponse();
+
+        AuthorizationHeader authHeader = request.getAuthorizationHeader();
+        String token = authHeader.getToken();
+        System.out.println("ahhahahahah" + token);
+
+        Claims claims = parseJwtToken(token);
+        System.out.println("claimsssss" + claims);
+
+        String username = claims.get("username", String.class);
+
+        Patient user = patientService.findByUsername(username);
+
+        Pharmacist pharmacistExists = pharmacistService.findByPhone(request.getPharmacistPhone());
+
+        if (pharmacistExists == null) {
+            throw new RuntimeException("pharmacist not found");
+        }
+
+        Patient updatedUser = PatientService.selectPharmacist(user.getUsername(), pharmacistExists);
+
+        response.setMessage("selected physician successfully!");
+        response.setUser(mapUser(updatedUser));
+        response.setSelectedPharmacist(
+                mapPharmacistDetails(pharmacistService.findByPhone(request.getPharmacistPhone())));
+
+        return response;
+    }
+
     @PayloadRoot(namespace = "http://example.com/ehospital", localPart = "GiveConsultationRequest")
     @ResponsePayload
     public GiveConsultationResponse giveConsultation(@RequestPayload GiveConsultationRequest request) throws Exception {
@@ -360,9 +399,7 @@ public class EHospitalEndpoint {
             throw new RuntimeException("Patient not found");
         }
 
-        if (user.getSelectedPhysician() == null || user.getSelectedPhysician().getEmail() == PhysicianEmail) {
-            System.out.println(user.getSelectedPhysician() != null);
-            System.out.println(user.getSelectedPhysician().getEmail() == PhysicianEmail);
+        if (user.getSelectedPhysician() == null || !user.getSelectedPhysician().getEmail().equals(PhysicianEmail)) {
             throw new RuntimeException("401 - Unauthorized");
         }
 
@@ -375,6 +412,52 @@ public class EHospitalEndpoint {
         response.setMessage("successfully given consultation to patient");
         response.setUser(mapUser(updatedUser));
         response.setConsultation(mapConsultation(consultation));
+
+        return response;
+    }
+
+    @PayloadRoot(namespace = "http://example.com/ehospital", localPart = "GivePrescriptionRequest")
+    @ResponsePayload
+    public GivePrescriptionResponse givePrescription(@RequestPayload GivePrescriptionRequest request) throws Exception {
+
+        GivePrescriptionResponse response = new GivePrescriptionResponse();
+
+        AuthorizationHeader authHeader = request.getAuthorizationHeader();
+        String token = authHeader.getToken();
+        System.out.println("ahhahahahah" + token);
+
+        Claims claims = parseJwtToken(token);
+        System.out.println("claimsssss" + claims);
+
+        String PharmacistPhone = claims.get("phone", String.class);
+
+        Patient patient = patientService.findByUsername(request.getPatientUsername());
+
+        if (patient == null) {
+            throw new RuntimeException("Patient not found");
+        }
+
+        if (patient.getSelectedPharmacist() == null
+                || !patient.getSelectedPharmacist().getPhone().equals(PharmacistPhone)) {
+            throw new RuntimeException("401 - Unauthorized");
+        }
+
+        if (patient.getConsultation() == null) {
+            throw new RuntimeException("Patient has no consultation yet");
+        }
+
+        Medecine med = medecineService.findMedicine(request.getMedecineName());
+
+        if (med == null) {
+            throw new RuntimeException("Medecine not found");
+        }
+        Prescription prescription = new Prescription(patient.getConsultation().getDisease(), med);
+
+        Patient updatedPatient = PatientService.getPrescription(patient.getUsername(), prescription);
+
+        response.setMessage("successfully given prescription to patient");
+        response.setUser(mapUser(updatedPatient));
+        response.setPrescription(mapPrescription(prescription));
 
         return response;
     }
@@ -452,6 +535,14 @@ public class EHospitalEndpoint {
         patientConsultation.setDiseaseName(consultation.getDisease());
 
         return patientConsultation;
+    }
+
+    private PatientPrescription mapPrescription(Prescription prescription) {
+        PatientPrescription patientPrescription = new PatientPrescription();
+        patientPrescription.setDiseaseName(prescription.getDisease());
+        patientPrescription.setMedecine(mapMed(prescription.getMedicine()));
+
+        return patientPrescription;
     }
 
     private MedecineDetails mapMed(Medecine med) {

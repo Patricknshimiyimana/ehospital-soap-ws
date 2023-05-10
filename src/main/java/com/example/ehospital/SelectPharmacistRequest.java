@@ -25,9 +25,8 @@ import jakarta.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="authenticated" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
- *         &lt;element name="message" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
- *         &lt;element name="token" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="AuthorizationHeader" type="{http://example.com/ehospital}AuthorizationHeader"/&gt;
+ *         &lt;element name="pharmacistPhone" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -38,81 +37,63 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "authenticated",
-    "message",
-    "token"
+    "authorizationHeader",
+    "pharmacistPhone"
 })
-@XmlRootElement(name = "PharmacistLoginResponse")
-public class PharmacistLoginResponse {
+@XmlRootElement(name = "SelectPharmacistRequest")
+public class SelectPharmacistRequest {
 
-    protected boolean authenticated;
+    @XmlElement(name = "AuthorizationHeader", required = true)
+    protected AuthorizationHeader authorizationHeader;
     @XmlElement(required = true)
-    protected String message;
-    @XmlElement(required = true)
-    protected String token;
+    protected String pharmacistPhone;
 
     /**
-     * Gets the value of the authenticated property.
+     * Gets the value of the authorizationHeader property.
      * 
+     * @return
+     *     possible object is
+     *     {@link AuthorizationHeader }
+     *     
      */
-    public boolean isAuthenticated() {
-        return authenticated;
+    public AuthorizationHeader getAuthorizationHeader() {
+        return authorizationHeader;
     }
 
     /**
-     * Sets the value of the authenticated property.
+     * Sets the value of the authorizationHeader property.
      * 
+     * @param value
+     *     allowed object is
+     *     {@link AuthorizationHeader }
+     *     
      */
-    public void setAuthenticated(boolean value) {
-        this.authenticated = value;
+    public void setAuthorizationHeader(AuthorizationHeader value) {
+        this.authorizationHeader = value;
     }
 
     /**
-     * Gets the value of the message property.
+     * Gets the value of the pharmacistPhone property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getMessage() {
-        return message;
+    public String getPharmacistPhone() {
+        return pharmacistPhone;
     }
 
     /**
-     * Sets the value of the message property.
+     * Sets the value of the pharmacistPhone property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setMessage(String value) {
-        this.message = value;
-    }
-
-    /**
-     * Gets the value of the token property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getToken() {
-        return token;
-    }
-
-    /**
-     * Sets the value of the token property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setToken(String value) {
-        this.token = value;
+    public void setPharmacistPhone(String value) {
+        this.pharmacistPhone = value;
     }
 
 }

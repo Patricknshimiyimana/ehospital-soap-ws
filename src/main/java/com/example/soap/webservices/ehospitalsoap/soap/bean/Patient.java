@@ -20,8 +20,10 @@ public class Patient {
     private Integer age;
     protected UserRoles role;
     private Physician selectedPhysician;
+    private Pharmacist selectedPharmacist;
     public Consultation consultation;
-    @NonNull
+    public Prescription prescription;
+    // @NonNull
     // @Expose(serialize = false)
     private String password;
 

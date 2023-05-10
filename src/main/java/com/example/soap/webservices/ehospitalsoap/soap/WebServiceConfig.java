@@ -27,7 +27,7 @@ public class WebServiceConfig extends WsConfigurerAdapter {
 	@Bean(name = "ehospital")
 	public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema authSchema) {
 		DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
-		wsdl11Definition.setPortTypeName("AuthPort");
+		wsdl11Definition.setPortTypeName("EhospitalPort");
 		wsdl11Definition.setLocationUri("/ws");
 		wsdl11Definition.setTargetNamespace("http://example.com/ehospital");
 		wsdl11Definition.setSchema(authSchema);

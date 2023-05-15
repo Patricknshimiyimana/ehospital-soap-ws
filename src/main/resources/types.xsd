@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://example.com/ehospital"
+    targetNamespace="http://example.com/ehospital"
+    elementFormDefault="qualified">
+
+    <xs:complexType name="AuthorizationHeader">
+        <xs:sequence>
+            <xs:element name="Token" type="xs:string" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="UserGenderType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Male" />
+            <xs:enumeration value="Female" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="UserRoleTypes">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Patient" />
+            <xs:enumeration value="Physician" />
+            <xs:enumeration value="Pharmacist" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="PatientDetails">
+        <xs:sequence>
+            <xs:element name="id" type="xs:string"></xs:element>
+            <xs:element name="fullNames" type="xs:string"></xs:element>
+            <xs:element name="username" type="xs:string"></xs:element>
+            <xs:element name="gender" type="tns:UserGenderType"></xs:element>
+            <xs:element name="age" type="xs:int"></xs:element>
+            <xs:element name="role" type="tns:UserRoleTypes"></xs:element>
+            <xs:element name="password" type="xs:string"></xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="PhysicianDetails">
+        <xs:sequence>
+            <xs:element name="id" type="xs:string"></xs:element>
+            <xs:element name="fullNames" type="xs:string"></xs:element>
+            <xs:element name="email" type="xs:string"></xs:element>
+            <xs:element name="gender" type="tns:UserGenderType"></xs:element>
+            <xs:element name="age" type="xs:int"></xs:element>
+            <xs:element name="role" type="tns:UserRoleTypes"></xs:element>
+            <xs:element name="password" type="xs:string"></xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="PharmacistDetails">
+        <xs:sequence>
+            <xs:element name="id" type="xs:string"></xs:element>
+            <xs:element name="fullNames" type="xs:string"></xs:element>
+            <xs:element name="phone" type="xs:string"></xs:element>
+            <xs:element name="gender" type="tns:UserGenderType"></xs:element>
+            <xs:element name="age" type="xs:int"></xs:element>
+            <xs:element name="role" type="tns:UserRoleTypes"></xs:element>
+            <xs:element name="password" type="xs:string"></xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="PatientConsultation">
+        <xs:sequence>
+            <xs:element name="PatientUsername" type="xs:string" />
+            <xs:element name="diseaseName" type="xs:string" />
+            <xs:element name="medecineName" type="xs:string" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="PatientPrescription">
+        <xs:sequence>
+            <xs:element name="PatientUsername" type="xs:string" />
+            <xs:element name="diseaseName" type="xs:string" />
+            <xs:element name="Medecine" type="tns:MedecineDetails" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="MedecineDetails">
+        <xs:sequence>
+            <xs:element name="medName" type="xs:string"></xs:element>
+            <xs:element name="medPrice" type="xs:string"></xs:element>
+            <xs:element name="expirationDate" type="xs:string"></xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>
